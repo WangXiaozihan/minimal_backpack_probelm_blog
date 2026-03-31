@@ -1,1 +1,0 @@
-# minimal_backpack_probelm_blog
