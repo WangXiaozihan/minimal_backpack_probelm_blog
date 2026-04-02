@@ -61,13 +61,13 @@
       scroll-behavior: smooth
     }
 
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--serif);
-      font-size: 18px;
-      line-height: 1.85;
-      -webkit-font-smoothing: antialiased;
+    body{
+      background:var(--bg);
+      color:var(--ink);
+      font-family:var(--serif);
+      font-size:20px;
+      line-height:1.9;
+      -webkit-font-smoothing:antialiased;
     }
 
     /* ── Reading progress ── */
@@ -2267,8 +2267,10 @@
                 many
                 items remain.</em>
             </p>
-            <div style="text-align:right">
-              <button class="gbtn-sm" id="g1sb" onclick="g1Start()">▶ Start Game</button>
+            <div style="text-align:center;margin-top:16px">
+              <button class="gbtn-sm" id="g1sb" onclick="g1Start()" style="padding:10px 40px;font-size:13px;letter-spacing:.1em">
+                ▶ Start Game
+              </button>
             </div>
           </div>
 
@@ -2454,9 +2456,14 @@
               <tbody id="gBody"></tbody>
             </table>
 
-            <div style="margin-top:11px;display:flex;gap:8px;flex-wrap:wrap">
-              <button class="g-step-btn" id="gStartBtn" onclick="greedyStart()">▶ Start</button>
-              <button class="gbtn-sm" onclick="greedyInit()">↺ Reset</button>
+            <div style="margin-top:11px">
+              <div style="text-align:center;margin-top:16px" id="gStartArea">
+                <button class="gbtn-sm" id="gStartBtn" onclick="greedyStart()"
+                  style="padding:10px 40px;font-size:13px;letter-spacing:.1em">
+                  ▶ Start Game
+                </button>
+              </div>
+              <button class="gbtn-sm" id="gResetBtn" onclick="greedyInit()" style="display:none;margin-top:8px">↺ Reset</button>
             </div>
 
             <div class="g-verdict" id="gVerdict"></div>
@@ -2733,9 +2740,9 @@
                   Previous β = ∞. What is the new β(t)?
                 </div>
                 <div class="ls-opts" id="r1s3opts">
-                  <button class="ls-opt" onclick="r1mcq(this,false)">∞ — keep the old value</button>
-                  <button class="ls-opt" onclick="r1mcq(this,true)">2 — min(∞, 2) = 2</button>
-                  <button class="ls-opt" onclick="r1mcq(this,false)">26 — average of old and new</button>
+                  <button class="ls-opt" onclick="r1mcq(this,false)">∞ (keep the old value)</button>
+                  <button class="ls-opt" onclick="r1mcq(this,true)">2 (min(∞, 2))</button>
+                  <button class="ls-opt" onclick="r1mcq(this,false)">26 (average of old and new)</button>
                 </div>
                 <div class="ls-fb" id="r1s3fb"></div>
                 <div class="ls-continue" id="r1s3c">
@@ -3224,24 +3231,26 @@
     let gState = {};
 
     function greedyInit() {
-      gState = { idx: 0, log: [], started: false };
-      document.getElementById('gItemStage').style.display = 'none';
-      document.getElementById('gTableWrap').style.display = 'none';
-      document.getElementById('gVerdict').classList.remove('show');
-      document.getElementById('gBody').innerHTML = '';
-      document.getElementById('gFeedback').textContent = '';
-      document.getElementById('gFeedback').className = 'ls-fb';
-      document.getElementById('gStartBtn').style.display = '';
-      document.getElementById('gKeepBtn').disabled = false;
-      document.getElementById('gDiscardBtn').disabled = false;
-    }
+        gState = { idx: 0, log: [], started: false };
+        document.getElementById('gItemStage').style.display = 'none';
+        document.getElementById('gTableWrap').style.display = 'none';
+        document.getElementById('gVerdict').classList.remove('show');
+        document.getElementById('gBody').innerHTML = '';
+        document.getElementById('gFeedback').textContent = '';
+        document.getElementById('gFeedback').className = 'ls-fb';
+        document.getElementById('gKeepBtn').disabled = false;
+        document.getElementById('gDiscardBtn').disabled = false;
+        document.getElementById('gStartArea').style.display = 'block';
+        document.getElementById('gResetBtn').style.display = 'none';
+      }
 
-    function greedyStart() {
-      document.getElementById('gStartBtn').style.display = 'none';
-      document.getElementById('gTableWrap').style.display = 'table';
-      document.getElementById('gItemStage').style.display = 'block';
-      gShowItem();
-    }
+      function greedyStart() {
+        document.getElementById('gStartArea').style.display = 'none';
+        document.getElementById('gResetBtn').style.display = '';
+        document.getElementById('gTableWrap').style.display = 'table';
+        document.getElementById('gItemStage').style.display = 'block';
+        gShowItem();
+      }
 
     function gShowItem() {
       const it = GREEDY_SEQ[gState.idx];
@@ -3501,23 +3510,29 @@
     }
 
     function r1mcq(btn, correct) {
-      const opts = document.getElementById('r1s3opts');
-      Array.from(opts.children).forEach(b => b.disabled = true);
-      btn.classList.add(correct ? 'correct' : 'wrong');
-      if (correct) {
-        document.getElementById('r1s3fb').textContent =
-          '✓ β(t) = min(∞, 2) = 2. The anchor drops to 2. 3β = $6 — this is now the cost limit per bin.';
-        document.getElementById('r1s3fb').className = 'ls-fb show ok';
-        document.getElementById('r1s3n').classList.add('done');
-        document.getElementById('r1s3s').textContent = '✓ Done';
-        document.getElementById('r1s3s').className = 'ls-status ok';
-        document.getElementById('r1s3c').classList.add('show');
-      } else {
-        document.getElementById('r1s3fb').textContent =
-          '✗ Not right. β(t) = min(β(t−1), α(t)) = min(∞, 2) = 2. Always take the minimum.';
-        document.getElementById('r1s3fb').className = 'ls-fb show err';
+        if (correct) {
+          const opts = document.getElementById('r1s3opts');
+          Array.from(opts.children).forEach(b => b.disabled = true);
+          btn.classList.add('correct');
+          document.getElementById('r1s3fb').textContent =
+            '✓ β(t) = min(∞, 2) = 2. The anchor drops to 2. 3β = $6 — this is now the cost limit per bin.';
+          document.getElementById('r1s3fb').className = 'ls-fb show ok';
+          document.getElementById('r1s3n').classList.add('done');
+          document.getElementById('r1s3s').textContent = '✓ Done';
+          document.getElementById('r1s3s').className = 'ls-status ok';
+          document.getElementById('r1s3c').classList.add('show');
+        } else {
+          btn.classList.add('wrong');
+          btn.disabled = true;
+          document.getElementById('r1s3fb').textContent =
+            '✗ Not right. β(t) = min(β(t−1), α(t)) = min(∞, 2) = 2. Always take the minimum. Try again.';
+          document.getElementById('r1s3fb').className = 'ls-fb show err';
+          // 只禁用当前错误选项，其余保持可点击
+          setTimeout(() => {
+            btn.classList.remove('wrong');
+          }, 800);
+        }
       }
-    }
 
     let r1purgeDone = false;
 
@@ -3571,35 +3586,64 @@
     let chal = {};
 
     function cInit() {
-      chal = {
-        phase: 'p1', p1idx: 0, totalSize: 0,
-        bin0: [], bin1: [],
-        beta: Infinity, step: null, done: false,
-        bootsPurged: false,
-      };
-      document.getElementById('cSize').textContent = '0';
-      document.getElementById('cBeta').textContent = '∞';
-      document.getElementById('cLimit').textContent = '∞';
-      document.getElementById('cLog').innerHTML = '<div class="lge info">> Challenge ready. Good luck!</div>';
-      document.getElementById('cLog').style.display = 'block';
-      ['cErr', 'cOk'].forEach(id => document.getElementById(id).classList.remove('show'));
-      document.getElementById('cBtn').textContent = '▶ Start';
-      document.getElementById('cBtn').onclick = cStart;
-      document.getElementById('cBtn').disabled = false;
-      document.getElementById('cBtn').parentElement.style.display = 'flex';
-      document.getElementById('cInstr').innerHTML = '<strong>Ready.</strong> Press Start to begin.';
-      document.getElementById('cP1stage').style.display = 'none';
-      document.getElementById('cP2area').style.display = 'none';
-      document.getElementById('cBetaOpts').style.display = 'none';
-      document.getElementById('cP1warn').style.display = 'none';
-      document.getElementById('cKs').innerHTML = '<span class="ks-empty">Empty</span>';
-      document.getElementById('cResultPanel').classList.remove('show');
-      for (let i = 0; i < 5; i++) {
-        const el = document.getElementById('cp' + i);
-        if (el) el.className = 'pdot';
+        chal = {
+          phase: 'p1', p1idx: 0, totalSize: 0,
+          bin0: [], bin1: [],
+          beta: Infinity, step: null, done: false,
+          bootsPurged: false,
+        };
+        document.getElementById('cSize').textContent = '0';
+        document.getElementById('cBeta').textContent = '∞';
+        document.getElementById('cLimit').textContent = '∞';
+        document.getElementById('cLog').innerHTML =
+          '<div class="lge info">> Challenge ready. Good luck!</div>';
+        ['cErr', 'cOk'].forEach(id => document.getElementById(id).classList.remove('show'));
+
+        // 重置指令
+        document.getElementById('cInstr').innerHTML =
+          '<strong>Ready.</strong> Press Start to begin.';
+
+        // 重置 phase strip
+        for (let i = 0; i < 5; i++) {
+          const el = document.getElementById('cp' + i);
+          if (el) el.className = 'pdot';
+        }
+
+        // 隐藏 Phase 2 区域，显示回 Start 按钮
+        document.getElementById('cP1stage').style.display = 'none';
+        document.getElementById('cP2area').style.display = 'none';
+
+        // 清除 beta options（如果存在）
+        const betaOpts = document.getElementById('cBetaOpts');
+        if (betaOpts) {
+          betaOpts.style.display = 'none';
+          betaOpts.innerHTML = '';
+        }
+
+        // 重置 Start 按钮
+        document.getElementById('cBtn').style.display = '';
+        document.getElementById('cBtn').textContent = '▶ Start';
+        document.getElementById('cBtn').onclick = cStart;
+        document.getElementById('cBtn').disabled = false;
+
+        // 清除 bins
+        cRenderBins();
+
+        // 清除 queue
+        document.getElementById('cQueue').innerHTML =
+          '<span style="font-size:12px;color:var(--ink3);font-style:italic">Waiting…</span>';
+
+        // 清除 knapsack
+        document.getElementById('cKs').innerHTML =
+          '<span class="ks-empty">Empty</span>';
+
+        // 清除上一次完成后动态插入的恭喜面板（如果有）
+        const existingPanel = document.querySelector('.ch-body .congrats-panel');
+        if (existingPanel) existingPanel.remove();
+
+        // 重置 Phase 1 warn
+        document.getElementById('cP1warn').style.display = 'none';
       }
-      cRenderBins();
-    }
 
     function cPhase(idx, st) {
       for (let i = 0; i < 5; i++) {
@@ -3782,9 +3826,9 @@
         const opts = document.getElementById('cBetaOpts');
         opts.style.display = 'flex';
         opts.innerHTML = `
-      <button class="ls-opt" onclick="cBetaChoice(this,false)">∞ — keep old value</button>
-      <button class="ls-opt" onclick="cBetaChoice(this,true)">3 — min(∞, 3) = 3</button>
-      <button class="ls-opt" onclick="cBetaChoice(this,false)">31.5 — average</button>`;
+      <button class="ls-opt" onclick="cBetaChoice(this,false)">∞</button>
+      <button class="ls-opt" onclick="cBetaChoice(this,true)">3</button>
+      <button class="ls-opt" onclick="cBetaChoice(this,false)">31.5</button>`;
       } else {
         cShowErr('✗ Wrong bin! size=1.0 ∈ (0.5, 1.0] → Bin 0. Review Step 2 (Size Grouping).');
         cPhase(2, 'err');
@@ -3793,29 +3837,35 @@
     }
 
     function cBetaChoice(btn, correct) {
-      const opts = document.getElementById('cBetaOpts');
-      Array.from(opts.children).forEach(b => b.disabled = true);
-      btn.classList.add(correct ? 'correct' : 'wrong');
-      if (correct) {
-        chal.beta = 3;
-        document.getElementById('cBeta').textContent = '3';
-        document.getElementById('cLimit').textContent = '9';
-        cRenderBins();
-        cLog('info', 'β = min(∞, 3) = 3. 3β = $9. Checking all bins for overload…');
-        cShowOk('Step 3 done. Check bins — both Bin 0 and Bin 1 may be overloaded!');
-        chal.step = 'purge';
-        cPhase(4, '');
-        document.getElementById('cInstr').innerHTML =
-          'Step 3 ✓. β=3, 3β=$9.<br>'  +
-          'Check which bin is overloaded'+
-          'Click the item in each overloaded bin to discard.';
-        cRenderBins();
-      } else {
-        cShowErr('✗ Wrong. β(t) = min(∞, 3) = 3. Always take the minimum. Review Step 3.');
-        cPhase(3, 'err');
-        cLog('lose', '✗ Wrong β choice.');
+        if (correct) {
+          const opts = document.getElementById('cBetaOpts');
+          Array.from(opts.children).forEach(b => b.disabled = true);
+          btn.classList.add('correct');
+          chal.beta = 3;
+          document.getElementById('cBeta').textContent = '3';
+          document.getElementById('cLimit').textContent = '9';
+          cRenderBins();
+          cLog('info', 'β = min(∞, 3) = 3. 3β = $9. Checking all bins for overload…');
+          cShowOk('Step 3 done. Check bins — both Bin 0 and Bin 1 may be overloaded!');
+          chal.step = 'purge';
+          cPhase(4, '');
+          document.getElementById('cBetaOpts').style.display = 'none';
+          document.getElementById('cInstr').innerHTML =
+            'Step 3 ✓. β=3, 3β=$9.<br>' +
+            '<strong>Bin 0:</strong> Broadsword($60)+Lantern($3)=$63<br>' +
+            '<strong>Bin 1:</strong> Boots($10)!<br>' +
+            'Click the item in each overloaded bin to discard.';
+          cRenderBins();
+        } else {
+          btn.classList.add('wrong');
+          btn.disabled = true;
+          cShowErr('✗ Wrong. β(t) = min(∞, 3) = 3. Always take the minimum. Try again.');
+          cLog('lose', '✗ Wrong β choice — try another option.');
+          setTimeout(() => {
+            btn.classList.remove('wrong');
+          }, 800);
+        }
       }
-    }
 
     function cItemClick(id, bi, e) {
       e.stopPropagation();
@@ -3829,7 +3879,7 @@
           cShowOk('Bin 0 purged! Now check Bin 1.');
           cCheckComplete();
         } else if (id === 'lantern') {
-          cShowErr('✗ Wrong! Broadsword ($60) is more expensive than Lantern ($3). Discard the highest-cost item. Review Step 4.');
+          cShowErr('✗ Wrong! Please review Step 4.');
           cPhase(4, 'err');
           cLog('lose', '✗ Wrong item in Bin 0 — discard Broadsword, not Lantern.');
         }
@@ -3872,6 +3922,7 @@
       text-align: center;
       animation: popUp .5s cubic-bezier(.34,1.56,.64,1);
     `;
+          panel.classList.add('congrats-panel'); 
           panel.innerHTML = `
       <div style="font-size:48px;margin-bottom:12px">🎉</div>
       <div style="font-family:var(--display);font-size:18px;font-weight:600;
